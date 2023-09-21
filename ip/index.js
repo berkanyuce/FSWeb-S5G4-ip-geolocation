@@ -1,4 +1,5 @@
 //axios import buraya gelecek
+import axios from 'axios';
 
 var benimIP;
 
@@ -70,3 +71,63 @@ async function ipAdresimiAl(){
 
 
 //kodlar buraya gelecek
+let benimBilgiler;
+function bilgileriGetir(myIp) {
+	return axios.get(`https://apis.ergineer.com/ipgeoapi/${myIp}`)
+		.then((res) => {
+			return res.data
+		})
+		.then(data => {
+			benimBilgiler = data
+		})
+}
+
+const sayfaYapici = (bilgiler) => {
+	const card = document.createElement('div');
+	card.classList.add("card")
+
+	const bayrak = document.createElement('img');
+	bayrak.src = "https://flagsapi.com/TR/flat/64.png"
+
+	const card_info = document.createElement('div');
+	card_info.classList.add("card-info")
+
+	  const ip_adresi = document.createElement('h3');
+	  ip_adresi.classList.add("ip");
+	  ip_adresi.textContent = bilgiler.sorgu;
+
+	  const ulke = document.createElement('p');
+	  ulke.classList.add("ulke");
+	  ulke.textContent = bilgiler["ülke"] +" (" + bilgiler["ülkeKodu"] + ")"
+
+	  const enlem = document.createElement('p');
+	  enlem.textContent = `Enlem: ${bilgiler["enlem"]} Boylam: ${bilgiler["boylam"]}`
+
+	  const sehir = document.createElement('p');
+	  sehir.textContent = `Şehir: ${bilgiler["şehir"]}`
+
+	  const saat_dilimi = document.createElement('p');
+	  saat_dilimi.textContent = `Saat dilimi: ${bilgiler["saatdilimi"]}`
+
+	  const para_birimi = document.createElement('p');
+	  para_birimi.textContent = `Para birimi: ${bilgiler["parabirimi"]}`
+
+	  const isp = document.createElement('p');
+	  isp.textContent = `ISP: ${bilgiler["isp"]}`
+
+	  card_info.append(ip_adresi, ulke, enlem, sehir, saat_dilimi, para_birimi, isp);
+
+	card.append(bayrak, card_info)
+
+	return card
+  }
+
+const cards = document.querySelector('.cards')
+
+ipAdresimiAl()
+  		.then(() => {
+			bilgileriGetir(benimIP)
+				.then(() => {
+					cards.append(sayfaYapici(benimBilgiler))
+				})
+		})
